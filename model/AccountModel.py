@@ -14,18 +14,20 @@ class Account:
     def login(self):
         myConnect = getConnection()
         cursor = myConnect.cursor()
-        cursor.execute("SELECT * FROM bkav_radio.account WHERE username like %s and password like %s",
+        cursor.execute("SELECT * FROM radio_online.account WHERE username like %s and password like %s",
                        (self.username, self.pass_word))
         record = cursor.fetchone()
-        item = {
-            'id': record[0],
-            'username': record[1],
-            'password': record[2],
-            'acc_type': record[3]
-        }
-        myConnect.close()
-        cursor.close()
-        return json.dumps(item)
+        if record is not None:
+            item = {
+                'id': record[0],
+                'username': record[1],
+                'password': record[2],
+                'acc_type': record[3]
+            }
+            myConnect.close()
+            cursor.close()
+            return json.dumps(item)
+        return json.dumps(None)
 
 
 class Account1:
@@ -37,7 +39,7 @@ class Account1:
     def add_acc(self):
         myConnect = getConnection()
         cursor = myConnect.cursor()
-        query = "INSERT INTO bkav_radio.account (username, password, acc_type) values (%s, %s, %s)"
+        query = "INSERT INTO radio_online.account (username, password, acc_type) values (%s, %s, %s)"
         cursor.execute(query, (self.username, self.password, self.acc_type))
         myConnect.commit()
         myConnect.close()
@@ -47,7 +49,7 @@ class Account1:
     def alter_account(self, acc_id):
         myConnect = getConnection()
         cursor = myConnect.cursor()
-        cursor.execute("UPDATE bkav_radio.account SET username = %s, password = %s, acc_type = %s \
+        cursor.execute("UPDATE radio_online.account SET username = %s, password = %s, acc_type = %s \
                         WHERE id_user = %s",
                        (self.username, self.password, self.acc_type, acc_id))
         myConnect.commit()
@@ -59,7 +61,7 @@ class Account1:
 def delete_acc(acc_id):
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    query = "DELETE FROM bkav_radio.account WHERE id_user = %s"
+    query = "DELETE FROM radio_online.account WHERE id_user = %s"
     cursor.execute(query, (acc_id,))
     myConnect.commit()
     myConnect.close()
@@ -70,7 +72,7 @@ def delete_acc(acc_id):
 def show_radio():
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    cursor.execute("SELECT * FROM bkav_radio.radio_channel")
+    cursor.execute("SELECT * FROM radio_online.radio_channel")
     array = []
     for item in cursor.fetchall():
         data = {
@@ -117,7 +119,7 @@ def show_favorite_channel(id_user):
 def get_channel_audio(name):
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    query = "SELECT link FROM bkav_radio.radio_channel WHERE channel_name = %s"
+    query = "SELECT link FROM radio_online.radio_channel WHERE channel_name = %s"
     cursor.execute(query, (name,))
     item = cursor.fetchone()
     myConnect.close()
@@ -128,7 +130,7 @@ def get_channel_audio(name):
 def show_acc():
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    cursor.execute("SELECT * FROM bkav_radio.account")
+    cursor.execute("SELECT * FROM radio_online.account")
     array = []
     for item in cursor.fetchall():
         data = {
@@ -149,7 +151,7 @@ def show_acc():
 def delete_channel(name):
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    query = "DELETE FROM bkav_radio.radio_channel cc WHERE cc.channel_name like %s"
+    query = "DELETE FROM radio_online.radio_channel cc WHERE cc.channel_name like %s"
     cursor.execute(query, (name,))
     myConnect.commit()
     myConnect.close()
@@ -160,7 +162,7 @@ def delete_channel(name):
 def add_fvr_channel(id_user, id_channel):
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    query = "SELECT liked FROM `bkav_radio`.`favorite` WHERE id_user like %s AND id_channel like %s"
+    query = "SELECT liked FROM `radio_online`.`favorite` WHERE id_user like %s AND id_channel like %s"
     cursor.execute(query, (id_user, id_channel,))
     arr = []
     for item in cursor.fetchall():
@@ -175,7 +177,7 @@ def add_fvr_channel(id_user, id_channel):
         cursor.close()
         myConnect = getConnection()
         cursor = myConnect.cursor()
-        query = "DELETE FROM `bkav_radio`.`favorite` WHERE id_user like %s and id_channel like %s;"
+        query = "DELETE FROM `radio_online`.`favorite` WHERE id_user like %s and id_channel like %s;"
         cursor.execute(query, (id_user, id_channel,))
         myConnect.commit()
         myConnect.close()
@@ -187,7 +189,7 @@ def add_fvr_channel(id_user, id_channel):
         cursor.close()
         myConnect = getConnection()
         cursor = myConnect.cursor()
-        query = "INSERT INTO `bkav_radio`.`favorite`(id_user, id_channel, liked) VALUES (%s, %s, %s)"
+        query = "INSERT INTO `radio_online`.`favorite`(id_user, id_channel, liked) VALUES (%s, %s, %s)"
         cursor.execute(query, (id_user, id_channel, tmp))
         myConnect.commit()
         myConnect.close()
@@ -198,7 +200,7 @@ def add_fvr_channel(id_user, id_channel):
 def add_to_history(id_user, id_channel):
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    query = "INSERT INTO bkav_radio.history ( id_user, id_channel, time) VALUES (%s, %s, now());"
+    query = "INSERT INTO radio_online.history ( id_user, id_channel, time) VALUES (%s, %s, now());"
     cursor.execute(query, (id_user, id_channel,))
     myConnect.commit()
     myConnect.close()
@@ -244,7 +246,7 @@ class Channel:
         myConnect = getConnection()
         cursor = myConnect.cursor()
         cursor.execute(
-            "INSERT INTO bkav_radio.radio_channel (icon, channel_name, link, c_type) values (%s, %s, %s, %s)",
+            "INSERT INTO radio_online.radio_channel (icon, channel_name, link, c_type) values (%s, %s, %s, %s)",
             (self.icon, self.name, self.link, self.type))
         myConnect.commit()
         myConnect.close()
@@ -254,7 +256,7 @@ class Channel:
     def alter_channel(self, old_name):
         myConnect = getConnection()
         cursor = myConnect.cursor()
-        cursor.execute("UPDATE bkav_radio.radio_channel SET icon = %s, channel_name = %s, link = %s, c_type = %s \
+        cursor.execute("UPDATE radio_online.radio_channel SET icon = %s, channel_name = %s, link = %s, c_type = %s \
                         WHERE channel_name = %s",
                        (self.icon, self.name, self.link, self.type, old_name))
         myConnect.commit()

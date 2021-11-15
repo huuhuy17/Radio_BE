@@ -4,7 +4,7 @@ import mysql.connector
 
 def getConnection():
     db = mysql.connector.connect(
-        host="localhost",
+        host="127.0.0.1",
         user='root',
         password='admin',
         database='radio_online',
