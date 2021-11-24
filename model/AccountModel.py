@@ -69,10 +69,21 @@ def delete_acc(acc_id):
     return json.dumps("DONE")
 
 
+def forgotPass(username, newpass):
+    myConnect = getConnection()
+    cursor = myConnect.cursor()
+    query = "UPDATE radio_online.account SET password = %s WHERE username = %s"
+    cursor.execute(query, (newpass, username,))
+    myConnect.commit()
+    myConnect.close()
+    cursor.close()
+    return json.dumps("DONE")
+
+
 def show_radio():
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    cursor.execute("SELECT * FROM radio_online.radio_channel")
+    cursor.execute("SELECT * FROM radio_online.radio_channel ORDER BY radio_channel.channel_name")
     array = []
     for item in cursor.fetchall():
         data = {
@@ -130,7 +141,7 @@ def get_channel_audio(name):
 def show_acc():
     myConnect = getConnection()
     cursor = myConnect.cursor()
-    cursor.execute("SELECT * FROM radio_online.account")
+    cursor.execute("SELECT * FROM radio_online.account ORDER BY account.username ASC")
     array = []
     for item in cursor.fetchall():
         data = {
@@ -140,6 +151,7 @@ def show_acc():
             'acc_type': item[3]
         }
         array.append(data)
+
     data_account = {
         'account': array
     }

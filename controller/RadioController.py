@@ -1,5 +1,4 @@
-from model.AccountModel import Account, Channel
-from flask import Flask, json, request
+from model.AccountModel import Account
 
 
 def login_radio_app(username, password):

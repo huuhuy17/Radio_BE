@@ -1,9 +1,11 @@
-from flask import Flask, json, request
+from gevent.pywsgi import WSGIServer
+
+from flask import Flask, request
 from flask_cors import CORS
 import controller.AccountController
 import controller.RadioController
 from model.AccountModel import show_radio, show_acc, Channel, delete_channel, Account1, delete_acc, add_fvr_channel, \
-    get_channel_audio, add_to_history , get_history, show_favorite_channel
+    get_channel_audio, add_to_history, get_history, show_favorite_channel, forgotPass
 
 app = Flask(__name__)
 CORS(app)
@@ -53,7 +55,7 @@ def addChannel():
     c_name = data.get('c_name')
     c_icon = data.get('c_icon')
     c_link = data.get('c_link')
-    c_type = data.get('c.type')
+    c_type = data.get('c_type')
     channel = Channel(c_icon, c_name, c_link, c_type)
     return channel.add_channel()
 
@@ -121,6 +123,14 @@ def alterAccount():
     return channel.alter_account(old)
 
 
+@app.route('/forgotpassword', methods=['GET', 'POST'])
+def forgotPassword():
+    data = request.json
+    username = data.get('username')
+    newpass = data.get('newpassword')
+    return forgotPass(username, newpass)
+
+
 @app.route('/getAudio', methods=['GET', 'POST'])
 def getAudio():
     data = request.json
@@ -129,4 +139,6 @@ def getAudio():
 
 
 if __name__ == "__main__":
-    app.run()
+    # app.run()
+    http_server = WSGIServer(('127.0.0.1', 5002), app)
+    http_server.serve_forever()

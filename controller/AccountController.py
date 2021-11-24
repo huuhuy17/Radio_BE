@@ -1,4 +1,4 @@
-from model.AccountModel import Account, Channel
+from model.AccountModel import Account
 
 
 def login_radio_app(username, password):
